@@ -80,6 +80,7 @@ int check_for_seq(std::vector<std::vector<int>> lab, int rows, int cols) {
     }
     return nums.size();
 }
+
 std::vector<std::vector<int>> myrand(int rows, int cols, int bl_pix_quant) {
     std::vector<int> vec;
     std::vector<std::vector<int>> pic;

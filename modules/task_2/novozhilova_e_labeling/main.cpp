@@ -36,7 +36,6 @@ TEST(Labeling_OpenMP, Test_500x500) {
     ASSERT_TRUE(check_passed);
 }
 
-
 TEST(Labeling_OpenMP, Test_500x300) {
     int rows = 500;
     int cols = 300;
