@@ -121,6 +121,7 @@ std::vector<std::vector<int>> myrand(int rows, int cols, int bl_pix_quant) {
     }
     return pic;
 }
+
 std::vector<std::vector<int>> SeqLabeling(std::vector<std::vector<int>> arr,
 int rows, int cols) {
     std::vector<std::vector<int>> lab;
