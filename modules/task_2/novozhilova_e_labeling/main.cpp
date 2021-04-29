@@ -6,9 +6,9 @@
 #include <iostream>
 #include "./labeling.h"
 
-TEST(Labeling_OpenMP, Test_500x500) {
-    int rows = 500;
-    int cols = 500;
+TEST(Labeling_OpenMP, Test_150x140) {
+    int rows = 150;
+    int cols = 140;
     std::vector<std::vector<int>> arr = myrand(rows, cols, 110000);
     std::vector<std::vector<int>> res;
     std::vector<std::vector<int>> expected;
@@ -36,9 +36,9 @@ TEST(Labeling_OpenMP, Test_500x500) {
     ASSERT_TRUE(check_passed);
 }
 
-TEST(Labeling_OpenMP, Test_500x300) {
-    int rows = 500;
-    int cols = 300;
+TEST(Labeling_OpenMP, Test_160x160) {
+    int rows = 160;
+    int cols = 160;
     std::vector<std::vector<int>> arr = myrand(rows, cols, 60000);
     std::vector<std::vector<int>> res;
     std::vector<std::vector<int>> expected;
@@ -66,7 +66,7 @@ TEST(Labeling_OpenMP, Test_500x300) {
     ASSERT_TRUE(check_passed);
 }
 
-TEST(Labeling_OpenMP, Test_300x900) {
+TEST(Labeling_OpenMP, Test_200x70) {
     int rows = 300;
     int cols = 900;
     std::vector<std::vector<int>> arr = myrand(rows, cols, 120000);
@@ -96,7 +96,7 @@ TEST(Labeling_OpenMP, Test_300x900) {
     ASSERT_TRUE(check_passed);
 }
 
-TEST(Labeling_OpenMP, Test_400x600) {
+TEST(Labeling_OpenMP, Test_70x200) {
     int rows = 400;
     int cols = 600;
     std::vector<std::vector<int>> arr = myrand(rows, cols, 100000);
@@ -126,7 +126,7 @@ TEST(Labeling_OpenMP, Test_400x600) {
     ASSERT_TRUE(check_passed);
 }
 
-TEST(Labeling_OpenMP, Test_600x400) {
+TEST(Labeling_OpenMP, Test_55x85) {
     int rows = 600;
     int cols = 400;
     std::vector<std::vector<int>> arr = myrand(rows, cols, 90000);
