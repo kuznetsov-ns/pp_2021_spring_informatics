@@ -9,7 +9,7 @@
 TEST(Labeling_OpenMP, Test_150x140) {
     int rows = 150;
     int cols = 140;
-    std::vector<std::vector<int>> arr = myrand(rows, cols, 110000);
+    std::vector<std::vector<int>> arr = myrand(rows, cols, 9000);
     std::vector<std::vector<int>> res;
     std::vector<std::vector<int>> expected;
     int n_size_seq = 0;
@@ -39,7 +39,7 @@ TEST(Labeling_OpenMP, Test_150x140) {
 TEST(Labeling_OpenMP, Test_160x160) {
     int rows = 160;
     int cols = 160;
-    std::vector<std::vector<int>> arr = myrand(rows, cols, 60000);
+    std::vector<std::vector<int>> arr = myrand(rows, cols, 11000);
     std::vector<std::vector<int>> res;
     std::vector<std::vector<int>> expected;
     int n_size_seq = 0;
@@ -67,9 +67,9 @@ TEST(Labeling_OpenMP, Test_160x160) {
 }
 
 TEST(Labeling_OpenMP, Test_200x70) {
-    int rows = 300;
-    int cols = 900;
-    std::vector<std::vector<int>> arr = myrand(rows, cols, 120000);
+    int rows = 200;
+    int cols = 70;
+    std::vector<std::vector<int>> arr = myrand(rows, cols, 5000);
     std::vector<std::vector<int>> res;
     std::vector<std::vector<int>> expected;
     int n_size_seq = 0;
@@ -96,10 +96,10 @@ TEST(Labeling_OpenMP, Test_200x70) {
     ASSERT_TRUE(check_passed);
 }
 
-TEST(Labeling_OpenMP, Test_70x200) {
-    int rows = 400;
-    int cols = 600;
-    std::vector<std::vector<int>> arr = myrand(rows, cols, 100000);
+TEST(Labeling_OpenMP, Test_300x300) {
+    int rows = 300;
+    int cols = 300;
+    std::vector<std::vector<int>> arr = myrand(rows, cols, 45000);
     std::vector<std::vector<int>> res;
     std::vector<std::vector<int>> expected;
     int n_size_seq = 0;
@@ -127,9 +127,9 @@ TEST(Labeling_OpenMP, Test_70x200) {
 }
 
 TEST(Labeling_OpenMP, Test_55x85) {
-    int rows = 600;
-    int cols = 400;
-    std::vector<std::vector<int>> arr = myrand(rows, cols, 90000);
+    int rows = 55;
+    int cols = 85;
+    std::vector<std::vector<int>> arr = myrand(rows, cols, 2200);
     std::vector<std::vector<int>> res;
     std::vector<std::vector<int>> expected;
     int n_size_seq = 0;
