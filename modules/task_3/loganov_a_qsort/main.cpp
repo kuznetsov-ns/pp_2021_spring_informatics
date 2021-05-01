@@ -46,7 +46,7 @@ TEST(Q_SORT_OMP_TESTS, Test5) {
     std::vector<double> vec;
     std::vector<double> vec2;
     // tbb::tick_count t1, t2, t3, t4;
-    vec = getRandomVector(700);
+    vec = getRandomVector(701);
     vec2 = copyvec(vec);
     // t1 = tbb::tick_count::now();
     Hoarsort(&vec, 0, static_cast<int>(vec.size())-1);
