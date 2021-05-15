@@ -56,7 +56,7 @@ TEST(Cannon_Multiplication, Test5_Cannon_Parall_Multiplication) {
     ASSERT_TRUE(DifferenceMatrix(C, MultiMatrix));
 }
 
-TEST(Cannon_Multiplication, Test6_Matrix_Mult) {
+TEST(Cannon_Multiplication, Test6_matrix_mult) {
     int n = 1000;
     std::vector<double> A = genMatrix(n);
     std::vector<double> B = genMatrix(n);
