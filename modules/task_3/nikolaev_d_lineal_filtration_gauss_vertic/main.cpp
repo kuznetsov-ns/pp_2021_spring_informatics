@@ -91,9 +91,9 @@ TEST(gaus_filt_Test, matrix_3x3) {
     ASSERT_EQ(imagewGauss, imagewGaussParallel);
 }
 
-TEST(TBB_Gaus_Filter_Test, Test_Matrix_1800x670) {
-    int i = 1800;
-    int j = 670;
+TEST(TBB_Gaus_Filter_Test, Test_Matrix_1500x470) {
+    int i = 1500;
+    int j = 470;
     double beta = 7;
     int R = 2;
     Matrix imagewGauss(i, std::vector<double>(j));
