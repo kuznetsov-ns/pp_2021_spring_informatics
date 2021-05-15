@@ -9,9 +9,9 @@ TEST(gaus_filt_Test, invalid_values) {
     ASSERT_ANY_THROW(createrandmatrix(i, j));
 }
 
-TEST(TBB_Gaus_Filter_Test, Test_Matrix_950x450) {
-    int i = 950;
-    int j = 450;
+TEST(TBB_Gaus_Filter_Test, Test_Matrix_350x100) {
+    int i = 350;
+    int j = 100;
     double beta = 7;
     int R = 2;
     Matrix imagewGauss(i, std::vector<double>(j));
@@ -30,9 +30,9 @@ TEST(TBB_Gaus_Filter_Test, Test_Matrix_950x450) {
     ASSERT_EQ(imagewGauss, imagewGaussParallel);
 }
 
-TEST(TBB_Gaus_Filter_Test, Test_Matrix_1350x720) {
-    int i = 1350;
-    int j = 720;
+TEST(TBB_Gaus_Filter_Test, Test_Matrix_650x200) {
+    int i = 650;
+    int j = 200;
     double beta = 7;
     int R = 2;
     Matrix imagewGauss(i, std::vector<double>(j));
@@ -91,9 +91,9 @@ TEST(gaus_filt_Test, matrix_3x3) {
     ASSERT_EQ(imagewGauss, imagewGaussParallel);
 }
 
-TEST(TBB_Gaus_Filter_Test, Test_Matrix_1500x470) {
-    int i = 1500;
-    int j = 470;
+TEST(TBB_Gaus_Filter_Test, Test_Matrix_400x400) {
+    int i = 400;
+    int j = 400;
     double beta = 7;
     int R = 2;
     Matrix imagewGauss(i, std::vector<double>(j));
