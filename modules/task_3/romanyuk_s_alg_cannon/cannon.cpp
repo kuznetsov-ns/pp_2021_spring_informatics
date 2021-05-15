@@ -55,7 +55,6 @@ std::vector<double> CannonMultiplication(std::vector<double> A,
 
     int size = static_cast<int>(sqrt(A.size()));
     std::vector<double> C(size * size);
-    int BlockCount = size / n;
 
     for (int i = 0; i < size * size; i++) {
         C[i] = 0;
