@@ -1,6 +1,6 @@
 // Copyright 2021 Romanyuk Sergey
 #include <tbb/tbb.h>
-#include "../../../modules/task_3/romanuyk_s_alg_cannona/cannon.h"
+#include "../../../modules/task_3/romanyuk_s_alg_cannon/cannon.h"
 
 
 std::vector<double> genMatrix(int n) {
