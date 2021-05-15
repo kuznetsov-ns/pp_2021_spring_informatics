@@ -45,6 +45,7 @@ void merge(T arr1[], int size1, T arr2[], int size2) {
     for (i = 0; i < k; ++i) {
         arr1[i] = tmp_arr[i];
     }
+    delete[] tmp_arr;
 }
 
 template<typename T>
