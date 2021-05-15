@@ -64,11 +64,11 @@ std::vector<double> CannonMultiplication(std::vector<double> A,
     for (int i = 0; i < size; i += n) {
         for (int j = 0; j < size; j += n) {
             for (int k = 0; k < size; k += n) {
-                for (int ii = i; ii < min(size, i + n); ii++) {
+                for (int ii = i; ii < fmin(size, i + n); ii++) {
                     for (int jj = j;
-                        jj < min(size, j + n); jj++) {
+                        jj < fmin(size, j + n); jj++) {
                         for (int kk = k;
-                            kk < min(size, k + n); kk++) {
+                            kk < fmin(size, k + n); kk++) {
                             C[ii * size + jj] += A[ii * size + kk]
                                 * B[kk * size + jj];
                         }
