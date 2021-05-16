@@ -2,6 +2,7 @@
 #ifndef MODULES_TASK_3_BESSOLITSYN_S_QUICK_SORT_QUICK_SORT_H_
 #define MODULES_TASK_3_BESSOLITSYN_S_QUICK_SORT_QUICK_SORT_H_
 
+#include <tbb/tbb.h>
 #include <tbb/blocked_range.h>
 #include <tbb/parallel_for.h>
 

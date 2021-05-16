@@ -1,10 +1,13 @@
 // Copyright 2021 Bessolitsyn Sergay
+
+#include <tbb/tbb.h>
+#include <tbb/tick_count.h>
+
 #include <gtest/gtest.h>
 #include <vector>
 #include <numeric>
 #include <algorithm>
 
-#include <tbb/tick_count.h>
 
 #include "../../task_3/bessolitsyn_s_quick_sort/quick_sort.h"
 
