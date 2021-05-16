@@ -50,13 +50,13 @@ std::vector<Point> sortedByPolarAngleTBB(
             tbb::task_scheduler_init init;
             tbb::spin_mutex mutex_;
 
-            int grainsize_ = points.size() / 4;
+            std::size_t grainsize_ = points.size() / 4;
 
-            for (int i = 2; i < points.size(); i++)
-                tbb::parallel_for(tbb::blocked_range<int>
+            for (std::size_t i = 2; i < points.size(); i++)
+                tbb::parallel_for(tbb::blocked_range<std::size_t>
                 (2, points.size(), grainsize_),
-                [&](const tbb::blocked_range<int>& r) {
-                    for (int j = 2; j < points.size(); j++) {
+                [&](const tbb::blocked_range<std::size_t>& r) {
+                    for (std::size_t j = 2; j < points.size(); j++) {
                         double current_angle = angleThreePoints(
                                     points[j-1], points[j], points[0]);
                         if (current_angle < 0) {
@@ -75,8 +75,8 @@ std::vector<Point> sortedByPolarAngleTBB(
                 });
             init.terminate();
     } else {
-        for (int i = 2; i < points.size(); i++) {
-            for (int j = 2; j < points.size(); j++) {
+        for (std::size_t i = 2; i < points.size(); i++) {
+            for (std::size_t j = 2; j < points.size(); j++) {
                 double current_angle = angleThreePoints(
                                     points[j-1], points[j], points[0]);
                 if (current_angle < 0) {
@@ -110,13 +110,13 @@ uint32_t getIndexMinLeftDownPoint(
     if (multithreading) {
         tbb::task_scheduler_init init;
 
-        int grainsize_ = points.size() / 4;
+        std::size_t grainsize_ = points.size() / 4;
 
-        tbb::parallel_for(tbb::blocked_range<int>(
+        tbb::parallel_for(tbb::blocked_range<std::size_t>(
             0, points.size(), grainsize_),
-        [&](const tbb::blocked_range<int>& r) {
-            int ind = tbb::task_arena::current_thread_index();
-            for (int i = 0; i < points.size(); i++) {
+        [&](const tbb::blocked_range<std::size_t>& r) {
+            std::size_t ind = tbb::task_arena::current_thread_index();
+            for (std::size_t i = 0; i < points.size(); i++) {
                 if (min_ys[ind] > points[i].y) {
                     min_ys[ind] = points[i].y;
                 }
@@ -125,11 +125,11 @@ uint32_t getIndexMinLeftDownPoint(
 
         min_y = *std::min_element(min_ys.begin(), min_ys.end());
 
-        tbb::parallel_for(tbb::blocked_range<int>(
+        tbb::parallel_for(tbb::blocked_range<std::size_t>(
             0, points.size(), grainsize_),
-        [&](const tbb::blocked_range<int>& r) {
-            int ind = tbb::task_arena::current_thread_index();
-            for (int i = 0; i < points.size(); i++) {
+        [&](const tbb::blocked_range<std::size_t>& r) {
+            std::size_t ind = tbb::task_arena::current_thread_index();
+            for (std::size_t i = 0; i < points.size(); i++) {
                 if (points[i].y == min_y &&
                     min_xs[ind] > points[i].x) {
                     min_xs[ind] = points[i].x;
@@ -139,12 +139,12 @@ uint32_t getIndexMinLeftDownPoint(
         min_x = *std::min_element(min_xs.begin(), min_xs.end());
         init.terminate();
     } else {
-        for (int i = 0; i < points.size(); i++) {
+        for (std::size_t i = 0; i < points.size(); i++) {
             if (points[i].y < min_y) {
                 min_y = points[i].y;
             }
         }
-        for (int i = 0; i < points.size(); i++) {
+        for (std::size_t i = 0; i < points.size(); i++) {
             if (points[i].y == min_y) {
                 if (points[i].x < min_x) {
                     min_x = points[i].x;
@@ -152,7 +152,7 @@ uint32_t getIndexMinLeftDownPoint(
             }
         }
     }
-    for (int i = 0; i < points.size(); i++) {
+    for (std::size_t i = 0; i < points.size(); i++) {
         if (points[i].x == min_x && points[i].y == min_y) {
             return i;
         }
