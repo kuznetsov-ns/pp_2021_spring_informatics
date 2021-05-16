@@ -42,63 +42,6 @@ double distanceTwoPoints(Point p1, Point p2) {
                 (p2.y - p1.y) * (p2.y - p1.y));
 }
 
-std::vector<Point> sortedByPolarAngleOMP(
-            std::vector<Point> points, bool multithreading) {
-    assert(!points.empty());
-    if (multithreading) {
-        #pragma omp parallel
-        {
-            int chunk;
-            if (points.size() < 100) {
-                chunk = ceil(points.size() / omp_get_num_threads());
-            } else {
-                chunk = (points.size() / omp_get_num_threads()) / 10;
-            }
-            for (std::size_t repeat = 2; repeat < points.size(); repeat++) {
-                #pragma omp for ordered schedule(static, chunk)
-                for (int j = 2; j < static_cast<int>(points.size()); j++) {
-                    double current_angle = angleThreePoints(
-                                points[j-1], points[j], points[0]);
-                    if (current_angle <= 0) {
-                        #pragma omp ordered
-                        {
-                            swapPoints(&points[j-1], &points[j]);
-                        }
-                    } else {
-                        if (current_angle == 0) {
-                            if (distanceTwoPoints(points[j], points[0]) <
-                                distanceTwoPoints(points[j-1], points[0])) {
-                                #pragma omp ordered
-                                {
-                                    swapPoints(&points[j-1], &points[j]);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    } else {
-        for (std::size_t i = 2; i < points.size(); i++) {
-            for (std::size_t j = 2; j < points.size(); j++) {
-                double current_angle = angleThreePoints(
-                                    points[j-1], points[j], points[0]);
-                if (current_angle <= 0) {
-                    swapPoints(&points[j-1], &points[j]);
-                } else {
-                    if (current_angle == 0) {
-                        if (distanceTwoPoints(points[j], points[0]) <
-                            distanceTwoPoints(points[j-1], points[0])) {
-                            swapPoints(&points[j-1], &points[j]);
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return points;
-}
-
 std::vector<Point> sortedByPolarAngleTBB(
             std::vector<Point> points, bool multithreading) {
     assert(!points.empty());
