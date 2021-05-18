@@ -1,8 +1,8 @@
 // Copyright 2021 Tkachev Alexey
+
 #ifndef MODULES_TASK_3_TKACHEV_A_GRAHAM_PASS_GRAHAM_PASS_H_
 #define MODULES_TASK_3_TKACHEV_A_GRAHAM_PASS_GRAHAM_PASS_H_
 
-#include <omp.h>
 #include <vector>
 #include <stack>
 #include <cstdint>
@@ -13,11 +13,11 @@
 #include <algorithm>
 #include <climits>
 #include <utility>
-#include <iostream>
 #include "tbb/task_scheduler_init.h"
 #include "tbb/parallel_for.h"
 #include "tbb/spin_mutex.h"
 #include "tbb/blocked_range.h"
+#include "tbb/parallel_sort.h"
 
 struct Point {double x, y;};
 

@@ -50,24 +50,28 @@ std::vector<Point> sortedByPolarAngleTBB(
             tbb::task_scheduler_init init;
             tbb::spin_mutex mutex_;
 
-            std::size_t grainsize_ = points.size() / 4;
+            std::size_t grainsize_ = points.size() / 8;
 
             for (std::size_t i = 2; i < points.size(); i++)
-                tbb::parallel_for(tbb::blocked_range<std::size_t>
-                (2, points.size(), grainsize_),
+                tbb::parallel_for(tbb::blocked_range<std::size_t>(
+                    2, points.size(), grainsize_),
                 [&](const tbb::blocked_range<std::size_t>& r) {
-                    for (std::size_t j = 2; j < points.size(); j++) {
+                    for (std::size_t j = r.begin(); j < r.end(); j++) {
                         double current_angle = angleThreePoints(
                                     points[j-1], points[j], points[0]);
                         if (current_angle < 0) {
-                            tbb::spin_mutex::scoped_lock lock(mutex_);
+                            tbb::spin_mutex::scoped_lock lock;
+                            lock.acquire(mutex_);
                             swapPoints(&points[j-1], &points[j]);
+                            lock.release();
                         } else {
                             if (current_angle == 0) {
                                 if (distanceTwoPoints(points[j], points[0]) <
                                     distanceTwoPoints(points[j-1], points[0])) {
-                                    tbb::spin_mutex::scoped_lock lock(mutex_);
+                                    tbb::spin_mutex::scoped_lock lock;
+                                    lock.acquire(mutex_);
                                     swapPoints(&points[j-1], &points[j]);
+                                    lock.release();
                                 }
                             }
                         }
@@ -110,13 +114,13 @@ uint32_t getIndexMinLeftDownPoint(
     if (multithreading) {
         tbb::task_scheduler_init init;
 
-        std::size_t grainsize_ = points.size() / 4;
+        std::size_t grainsize_ = points.size() / 8;
 
         tbb::parallel_for(tbb::blocked_range<std::size_t>(
             0, points.size(), grainsize_),
         [&](const tbb::blocked_range<std::size_t>& r) {
             std::size_t ind = tbb::task_arena::current_thread_index();
-            for (std::size_t i = 0; i < points.size(); i++) {
+            for (std::size_t i = r.begin(); i < r.end(); i++) {
                 if (min_ys[ind] > points[i].y) {
                     min_ys[ind] = points[i].y;
                 }
@@ -129,7 +133,7 @@ uint32_t getIndexMinLeftDownPoint(
             0, points.size(), grainsize_),
         [&](const tbb::blocked_range<std::size_t>& r) {
             std::size_t ind = tbb::task_arena::current_thread_index();
-            for (std::size_t i = 0; i < points.size(); i++) {
+            for (std::size_t i = r.begin(); i < r.end(); i++) {
                 if (points[i].y == min_y &&
                     min_xs[ind] > points[i].x) {
                     min_xs[ind] = points[i].x;
