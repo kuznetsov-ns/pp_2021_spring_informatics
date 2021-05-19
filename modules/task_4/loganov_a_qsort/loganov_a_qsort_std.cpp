@@ -44,7 +44,7 @@ void MergePartsOfVector(double* vec1, int n1, int second, int n2) {
     int k = 0;
     int g = second;
     int f = 0;
-    double* r = new double[static_cast<int64_t>(n1 + n2)];
+    double* r = new double[(n1 + n2)];
      for (f = 0; k < n1 && g < static_cast<int64_t>(second + n2); f++) {
      if (vec1[k] < vec1[g]) {
          r[f] = vec1[k];
