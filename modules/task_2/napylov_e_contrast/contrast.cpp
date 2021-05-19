@@ -65,11 +65,11 @@ std::pair<unsigned char, unsigned char> minmax_omp(const VecImage& image) {
     // Reduction
     max_col = *std::max_element(max_vec.begin(), max_vec.end());
     min_col = *std::min_element(min_vec.begin(), min_vec.end());
-    return std::pair<double, double>(min_col, max_col);
+    return std::pair<unsigned char, unsigned char>(min_col, max_col);
 }
 
 VecImage add_contrast_omp(VecImage image) {
-    std::pair<double, double> minmax = minmax_omp(image);
+    std::pair<unsigned char, unsigned char> minmax = minmax_omp(image);
     unsigned char min_col = minmax.first;
     unsigned char max_col = minmax.second;
 
