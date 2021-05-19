@@ -18,6 +18,7 @@ TEST(Q_SORT_STD_TESTS, Test1) {
 TEST(Q_SORT_STD_TESTS, Test2) {
     std::vector<double> vec;
     std::vector<double> vec2;
+    vec = getRandomVector(213);
     vec2 = copyvec(vec);
     Hoarsort(&vec, 0, static_cast<int>(vec.size())-1);
     QsortSTD(&vec2);
