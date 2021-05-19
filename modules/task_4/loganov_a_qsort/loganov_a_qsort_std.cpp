@@ -71,6 +71,7 @@ void MergePartsOfVector(double* vec1, int n1, int second, int n2) {
     vec1[i] = r[i];
     i++;
     }
+    delete[] r;
 }
 void QsortSTD(std::vector<double>* vec) {
     int sz = (*vec).size();
