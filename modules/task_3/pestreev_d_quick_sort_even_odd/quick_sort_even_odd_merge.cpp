@@ -63,8 +63,7 @@ class evenSplit:public tbb::task {
         int a = 0;
         int b = 0;
         int i = 0;
-
-        for (i, a, b; (a < size_mass) && (b < size_mas_even); i+=2) {
+        while ((a < size_mass) && (b < size_mas_even)) {
             if (mas_even[a] <= other[b]) {
                 mass[i] = mas_even[a];
                 a+=2;
@@ -72,6 +71,7 @@ class evenSplit:public tbb::task {
                 mass[i] = other[b];
                 b+=2;
             }
+            i += 2;
         }
 
         if (a == size_mass) {
@@ -111,8 +111,7 @@ class oddSplit:public tbb::task {
     int a = 1;
     int b = 1;
     int i = 1;
-
-    for (i, a, b; (a < size_mass) && (b < size_mas_odd); i += 2) {
+    while ((a < size_mass) && (b < size_mas_odd)) {
         if (mas_odd[a] <= other[b]) {
             mass[i] = mas_odd[a];
             a+=2;
@@ -120,6 +119,7 @@ class oddSplit:public tbb::task {
             mass[i] = other[b];
             b+=2;
         }
+        i += 2;
     }
 
     if (a == size_mass) {
