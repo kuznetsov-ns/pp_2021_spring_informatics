@@ -291,7 +291,7 @@ std::vector<int> parallel_sorting(const std::vector<int>& vec,
     int comps_size = comps.size();
     std::vector<std::thread> threads(thread_size);
     int nloop = thread_size;
-    std::mutex critical;
+
     for (int t = 0; t < thread_size; t++) {
         int begin_i = t * nloop / thread_size;
         int end_i = 0;
@@ -303,7 +303,6 @@ std::vector<int> parallel_sorting(const std::vector<int>& vec,
         threads[t] = std::thread(std::bind(
             [&](const int bi, const int ei, const int t) {
                 for (int i = bi; i < ei; i++) {
-                    const int j = i*i;
                     //  std::lock_guard<std::mutex> lock(critical);
                     const std::vector<int> v = loc[i];
                     loc[i] = quickSortV(v);
