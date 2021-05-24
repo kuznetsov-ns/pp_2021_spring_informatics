@@ -10,8 +10,8 @@
 #include <utility>
 #include <ctime>
 
-#include "../../../modules/task_4/pestreev_d_quick_sort_even_odd/quick_sort_even_odd_merge.h"
-#include "../../../3rdparty/unapproved/unapproved.h"
+#include "../../../../modules/task_4/pestreev_d_quick_sort_even_odd/quick_sort_even_odd_merge.h"
+#include "../../../../3rdparty/unapproved/unapproved.h"
 
 std::vector<std::pair<int, int>> comps;
 std::vector<std::vector<int>> loc;
