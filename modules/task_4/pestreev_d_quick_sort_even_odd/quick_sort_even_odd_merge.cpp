@@ -316,9 +316,10 @@ std::vector<int> parallel_sorting(const std::vector<int>& vec,
         [](std::thread& x) {x.join();});
 
     myBarrier = new Mybarrier(thread_size);
+
     exchangeBetweenProcesses* ex_beet_proc =
         static_cast<exchangeBetweenProcesses*>(::operator
-            new(sizeof(exchangeBetweenProcesses) * thread_size));
+        new(sizeof(exchangeBetweenProcesses) * thread_size));
 
     for (int i = 0; i < thread_size; i++) {
         new (&ex_beet_proc[i])exchangeBetweenProcesses(i, comps_size, vecsizeL);
@@ -329,7 +330,7 @@ std::vector<int> parallel_sorting(const std::vector<int>& vec,
     }
 
     ::operator delete(ex_beet_proc);
-    delete myBarrier;
+    delete[] myBarrier;
 
     std::vector<int> res;
     int size = thread_size;
