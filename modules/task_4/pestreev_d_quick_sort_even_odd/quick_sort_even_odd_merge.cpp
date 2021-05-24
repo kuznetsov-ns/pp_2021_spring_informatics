@@ -156,8 +156,8 @@ class Mybarrier {
     std::mutex m;
     std::condition_variable cond_var;
  public:
-    explicit Mybarrier(unsigned int n) : threadCount(n) {
-        threadsWait = 0;
+    explicit Mybarrier(unsigned int n) : threadCount(n), threadsWait(0) {
+        //  threadsWait = 0;
     }
     Mybarrier(const Mybarrier &) = delete;
     void wait() {
