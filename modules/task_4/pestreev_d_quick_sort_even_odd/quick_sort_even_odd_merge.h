@@ -14,7 +14,7 @@ void networking(const std::vector<int>& arr);
 void batchers_network(int proc_size);
 std::vector<std::vector<int>> div_into_part(const std::vector<int>& vec, int n);
 std::vector<int> parallel_sorting(const std::vector<int>& vec, int thread_size);
-class barrier;
+class Mybarrier;
 class Thread;
-class BarrierDemo;
+class exchangeBetweenProcesses;
 #endif  // MODULES_TASK_4_PESTREEV_D_QUICK_SORT_EVEN_ODD_QUICK_SORT_EVEN_ODD_MERGE_H_
