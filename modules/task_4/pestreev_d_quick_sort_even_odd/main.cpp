@@ -74,17 +74,9 @@ TEST(Quick_Sort_Operations, Test_random_vector_1285231_2) {
 
 TEST(Quick_Sort_Operations, Test_random_vector_22852314_4) {
     std::vector<int> vec = getRandomVector(22852314);
-    clock_t start = clock();
     std::vector<int> vec_V = parallel_sorting(vec, 4);
-    clock_t end = clock();
-    double seconds = static_cast<double>(end - start) / CLOCKS_PER_SEC;
-    std::cout << seconds << "<--parallel" << std::endl;
     std::vector<int> vec_stan = vec;
-    clock_t start2 = clock();
     std::sort(vec_stan.begin(), vec_stan.end());
-    clock_t end2 = clock();
-    double seconds2 = static_cast<double>(end2 - start2) / CLOCKS_PER_SEC;
-    std::cout << seconds2 << "<--seq" << std::endl;
     ASSERT_EQ(vec_V, vec_stan);
 }
 
