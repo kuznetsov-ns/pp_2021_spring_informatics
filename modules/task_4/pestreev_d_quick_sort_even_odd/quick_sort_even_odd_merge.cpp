@@ -173,91 +173,57 @@ class Mybarrier {
 
 Mybarrier *myBarrier;
 
-class Thread {
- private:
-    std::thread* threads;
-    static void threadFunction(Thread* arg) {
-        arg->run();
-    }
- public:
-    Thread() {
-        threads = nullptr;
-    }
-    Thread(const Thread&) = delete;
-    virtual ~Thread() {delete threads;}
-    virtual void run() = 0;
-    void start() {
-        threads = new std::thread(Thread::threadFunction, this);
-    }
-    void wait() {
-        threads->join();
-    }
-};
-
-class exchangeBetweenProcesses: public Thread {
- private:
-    int id;
-    int comps_size;
-    int vecsizeL;
-
- public:
-    exchangeBetweenProcesses(int i, int cs, int vsL) {
-        id = i;
-        comps_size = cs;
-        vecsizeL = vsL;
-    }
-    void run() {
-        for (int i = 0; i < comps_size; i++) {
-            std::vector<int> localV(vecsizeL);
-            std::vector<int> neighboringV(vecsizeL);
-            std::vector<int> tmpV(vecsizeL);
-            if (id == comps[i].first) {
-                localV = loc[id];
-                neighboringV = loc[comps[i].second];
-                int localidx = 0;
-                int neighboridx = 0;
-                for (int tmp_index = 0; tmp_index < vecsizeL; tmp_index++) {
-                    int local = localV[localidx];
-                    int neighbor = neighboringV[neighboridx];
-                    if (local < neighbor) {
-                        tmpV[tmp_index] = local;
-                        localidx++;
-                    } else {
-                        tmpV[tmp_index] = neighbor;
-                        neighboridx++;
-                    }
-                }
-                myBarrier->wait();
-                loc[id] = tmpV;
-            } else if (id == comps[i].second) {
-                localV = loc[id];
-                neighboringV = loc[comps[i].first];
-                int start = vecsizeL - 1;
-                int localidx = start;
-                int neighboridx = start;
-                for (int tmp_index = start; tmp_index >= 0; tmp_index--) {
-                    int local = localV[localidx];
-                    int neighbor = neighboringV[neighboridx];
-                    if (local > neighbor) {
-                        tmpV[tmp_index] = local;
-                        localidx--;
-                    } else {
-                        tmpV[tmp_index] = neighbor;
-                        neighboridx--;
-                    }
-                }
-                myBarrier->wait();
-                loc[id] = tmpV;
-
-            } else if ((id != comps[i].second)) {
-                if ((id != comps[i].first)) {
-                    myBarrier->wait();
+void exchangeBetweenProcesses(int id, int comps_size, int vecsizeL) {
+    for (int i = 0; i < comps_size; i++) {
+        std::vector<int> localV(vecsizeL);
+        std::vector<int> neighboringV(vecsizeL);
+        std::vector<int> tmpV(vecsizeL);
+        if (id == comps[i].first) {
+            localV = loc[id];
+            neighboringV = loc[comps[i].second];
+            int localidx = 0;
+            int neighboridx = 0;
+            for (int tmp_index = 0; tmp_index < vecsizeL; tmp_index++) {
+                int local = localV[localidx];
+                int neighbor = neighboringV[neighboridx];
+                if (local < neighbor) {
+                    tmpV[tmp_index] = local;
+                    localidx++;
+                } else {
+                    tmpV[tmp_index] = neighbor;
+                    neighboridx++;
                 }
             }
             myBarrier->wait();
+            loc[id] = tmpV;
+        } else if (id == comps[i].second) {
+            localV = loc[id];
+            neighboringV = loc[comps[i].first];
+            int start = vecsizeL - 1;
+            int localidx = start;
+            int neighboridx = start;
+            for (int tmp_index = start; tmp_index >= 0; tmp_index--) {
+                int local = localV[localidx];
+                int neighbor = neighboringV[neighboridx];
+                if (local > neighbor) {
+                    tmpV[tmp_index] = local;
+                    localidx--;
+                } else {
+                    tmpV[tmp_index] = neighbor;
+                    neighboridx--;
+                }
+            }
+            myBarrier->wait();
+            loc[id] = tmpV;
+
+        } else if ((id != comps[i].second)) {
+            if ((id != comps[i].first)) {
+                myBarrier->wait();
+            }
         }
+        myBarrier->wait();
     }
-};
+}
 
 
 std::vector<int> parallel_sorting(const std::vector<int>& vec,
@@ -317,20 +283,16 @@ std::vector<int> parallel_sorting(const std::vector<int>& vec,
 
     myBarrier = new Mybarrier(thread_size);
 
-    exchangeBetweenProcesses* ex_beet_proc =
-        static_cast<exchangeBetweenProcesses*>(::operator
-        new(sizeof(exchangeBetweenProcesses) * thread_size));
-
+    std::thread* ts = new std::thread[thread_size];
     for (int i = 0; i < thread_size; i++) {
-        new (&ex_beet_proc[i])exchangeBetweenProcesses(i, comps_size, vecsizeL);
-        ex_beet_proc[i].start();
-    }
-    for (int i = 0; i < thread_size; i++) {
-        ex_beet_proc[i].wait();
+        ts[i] = std::thread(exchangeBetweenProcesses, i, comps_size, vecsizeL);
     }
 
-    ::operator delete(ex_beet_proc);
-    delete[] myBarrier;
+    for (int i = 0; i < thread_size; i++) {
+        ts[i].join();
+    }
+
+    delete myBarrier;
 
     std::vector<int> res;
     int size = thread_size;
@@ -342,5 +304,6 @@ std::vector<int> parallel_sorting(const std::vector<int>& vec,
     if (vecsizechange > 0)
         res.erase(res.begin() + vecsizeG - vecsizechange,
             res.begin() + vecsizeG);
+    delete[] ts;
     return res;
 }
