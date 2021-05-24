@@ -180,7 +180,7 @@ class Thread {
         arg->run();
     }
  public:
-    Thread() {}
+//  Thread() {}
     Thread(const Thread&) = delete;
     virtual ~Thread() {delete threads;}
     virtual void run() = 0;
