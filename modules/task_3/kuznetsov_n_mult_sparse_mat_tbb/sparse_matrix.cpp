@@ -1,187 +1,153 @@
 // Copyright 2021 Kuznetsov Nikita
 #include <tbb/tbb.h>
-#include <random>
-#include <algorithm>
-#include <cstring>
-#include <vector>
-#include <ctime>
+#include <limits>
 #include <cmath>
+#include <random>
 #include "../../modules/task_3/kuznetsov_n_mult_sparse_mat_tbb/sparse_matrix.h"
 
-CcsMatrix::CcsMatrix(int _M, int _N, int nz) {
-    if (_M <= 0 || _N <= 0) throw "wrong size";
-    M = _M;
-    N = _N;
-    colIndex.resize(_N + 1);
-    not_zero_number = nz;
-    value.resize(nz);
-    row.resize(nz);
+SparseMatrix::SparseMatrix(const std::vector<double>& _values,
+  const std::vector<int>& _col_indexes,
+  const std::vector<int>& _rows, int _num_nzero,
+  int _size) {
+  num_nzero = static_cast<int>(_values.size());
+  size = _size;
+  values = _values;
+  col_indexes = _col_indexes;
+  rows = _rows;
 }
 
-double measurementOfTime(int M1, int N1, int N2, int num_threads) {
-    if (M1 <= 0 || N1 <= 0 || N2 <= 0) throw "wrong size";
-    if (num_threads <= 0) throw "wrong number of threads";
-
-    CcsMatrix m1(generateMatrix(M1, N1));
-    CcsMatrix m2(generateMatrix(N1, N2));
-
-    tbb::task_scheduler_init init(num_threads);
-
-    tbb::tick_count t1 = tbb::tick_count::now();
-    matrixMultiplicate(&m1, &m2);
-    tbb::tick_count t2 = tbb::tick_count::now();
-
-    init.terminate();
-
-    return (t2 - t1).seconds();
+SparseMatrix::SparseMatrix(int _size, int _num_nzero, unsigned int seed) {
+  if (_size < 0)
+    throw - 1;
+  num_nzero = _num_nzero;
+  size = _size;
+  values.resize(num_nzero);
+  rows.resize(num_nzero);
+  col_indexes.resize(size + 1);
+  std::mt19937 gen;
+  gen.seed(seed);
+  std::uniform_real_distribution<double> dbgen(0.05, 1.0);
+  for (int i = 0; i < num_nzero; ++i) {
+    double tmp = dbgen(gen);
+    values[i] = tmp * gen();
+    rows[i] = gen() % size;
+    ++col_indexes[gen() % size + 1];
+  }
+  for (int i = 0; i < size; ++i) {
+    col_indexes[i + 1] += col_indexes[i];
+  }
 }
 
-bool operator==(const CcsMatrix& m1, const CcsMatrix& m2) {
-    return m1.value == m2.value && m1.row == m2.row &&
-        m1.colIndex == m2.colIndex && m1.M == m2.M;
+bool SparseMatrix::operator==(const SparseMatrix& SM) {
+  if (num_nzero != SM.num_nzero || size != SM.size) {
+    return false;
+  }
+  return values == SM.values && col_indexes == SM.col_indexes &&
+    rows == SM.rows;
 }
 
-CcsMatrix generateMatrix(int M, int N) {
-    if (M <= 0 || N <= 0) throw "wrong size";
-    int nz = 0, nz_in_col = 0, tmp = 0;
-    std::mt19937 gen;
-    std::vector<int> row;
-    gen.seed(static_cast<unsigned int>(time(0)));
-    nz = static_cast<int>(sqrt(M*N));
-    nz_in_col = (nz / N == 0) ? 1 : nz / N;
+SparseMatrix SparseMatrix::transpose() {
+  std::vector<double> tr_values(values.size());
+  std::vector<int> tr_col_indexes(col_indexes.size());
+  std::vector<int> tr_rows(rows.size());
 
-    CcsMatrix m(M, N, 0);
-    m.not_zero_number = nz_in_col * N;
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < nz_in_col; j++) {
-            m.value.push_back(gen() % static_cast<int>(M*N));
-            tmp = gen() % static_cast<int>(M);
-            while (std::find(row.begin(), row.end(), tmp) != row.end())
-                tmp = gen() % static_cast<int>(M);
-            m.row.push_back(tmp);
+  for (int i = 0; i < num_nzero; ++i) {
+    ++tr_col_indexes[rows[i] + 1];
+  }
+
+  int sum = 0;
+  for (int i = 1; i <= size; ++i) {
+    int tmp = tr_col_indexes[i];
+    tr_col_indexes[i] = sum;
+    sum = sum + tmp;
+  }
+
+  for (int i = 0; i < size; ++i) {
+    for (int j = col_indexes[i]; j < col_indexes[i + 1]; ++j) {
+      int Iind = tr_col_indexes[rows[j] + 1];
+      ++tr_col_indexes[rows[j] + 1];
+      tr_values[Iind] = values[j];
+      tr_rows[Iind] = i;
+    }
+  }
+  return SparseMatrix(tr_values, tr_col_indexes, tr_rows, num_nzero, size);
+}
+
+SparseMatrix SparseMatrix::operator*(const SparseMatrix& SM) {
+  std::vector<double> res_values;
+  std::vector<int> res_col_indexes(size + 1);
+  std::vector<int> res_rows;
+  SparseMatrix M_tr = this->transpose();
+
+  const double eps = std::numeric_limits<double>::epsilon();
+
+  for (int i = 0; i < size; ++i) {
+    for (int j = 0; j < size; ++j) {
+      double tmp = 0.0;
+      for (int g = SM.col_indexes[i]; g < SM.col_indexes[i + 1]; ++g) {
+        for (int f = M_tr.col_indexes[j]; f < M_tr.col_indexes[j + 1]; ++f) {
+          if (SM.rows[g] == M_tr.rows[f]) {
+            tmp += M_tr.values[f] * SM.values[g];
+            break;
+          }
         }
-        m.colIndex[i] = i * nz_in_col;
+      }
+      if (tmp > eps || tmp < -eps) {
+        res_values.push_back(tmp);
+        res_rows.push_back(j);
+        ++res_col_indexes[i + 1];
+      }
     }
-    m.colIndex[N] = N * nz_in_col;
-    return m;
+    res_col_indexes[i + 1] += res_col_indexes[i];
+  }
+  return SparseMatrix(res_values, res_col_indexes, res_rows,
+    static_cast<int>(res_rows.size()), size);
 }
 
-CcsMatrix transposeMatrix(const CcsMatrix* m) {
-    int i, j, k1, k2, iindex, rindex, row, tmp, s = 0;
-    double v;
-    CcsMatrix res(m->N, m->M, m->not_zero_number);
+SparseMatrix SparseMatrix::ParallelMult(const SparseMatrix& SM, int th) {
+  std::vector<double> res_values;
+  std::vector<int> res_col_indexes(size + 1);
+  std::vector<int> res_rows;
+  SparseMatrix M_tr = this->transpose();
 
-    for (i = 0; i < m->not_zero_number; i++)
-        res.colIndex[m->row[i] + 1]++;
+  const double eps = std::numeric_limits<double>::epsilon();
 
-    for (i = 1; i <= m->M; i++) {
-        tmp = res.colIndex[i];
-        res.colIndex[i] = s;
-        s += tmp;
-    }
+  std::vector<std::vector<double>> tmp_values(size);
+  std::vector<double> tmp_col_indexes(size);
+  std::vector<std::vector<int>> tmp_rows(size);
 
-    for (i = 0; i < m->N; i++) {
-        k1 = m->colIndex[i];
-        k2 = m->colIndex[i + 1];
-        row = i;
-        for (j = k1; j < k2; j++) {
-            v = m->value[j];
-            rindex = m->row[j];
-            iindex = res.colIndex[rindex + 1];
-            res.value[iindex] = v;
-            res.row[iindex] = row;
-            res.colIndex[rindex + 1]++;
-        }
-    }
-    return res;
-}
-
-double scalarMultiplication(const CcsMatrix* transposed_m, const CcsMatrix* m,
-    int i, int j) {
-    double res = 0;
-    int k = 0;
-    for (k = transposed_m->colIndex[i]; k < transposed_m->colIndex[i + 1]; k++)
-        for (int l = m->colIndex[j]; l < m->colIndex[j + 1]; l++)
-            if (transposed_m->row[k] == m->row[l]) {
-                res += transposed_m->value[k] * m->value[l];
+  tbb::task_scheduler_init init(th);
+  tbb::parallel_for(
+    tbb::blocked_range<int>(0, size), [&](tbb::blocked_range<int>& r) {
+      for (int i = r.begin(); i != r.end(); ++i) {
+        for (int j = 0; j < size; ++j) {
+          double tmp = 0.0;
+          for (int g = SM.col_indexes[i]; g < SM.col_indexes[i + 1]; ++g) {
+            for (int f = M_tr.col_indexes[j]; f < M_tr.col_indexes[j + 1];
+              ++f) {
+              if (SM.rows[g] == M_tr.rows[f]) {
+                tmp += M_tr.values[f] * SM.values[g];
                 break;
+              }
             }
-    return res;
-}
-
-class Multiplicator {
- private:
-    CcsMatrix transposed_A, B;
-    std::vector<double>* value;
-    std::vector<int>* row;
-    std::vector<int>* resColIndex;
-
- public:
-    Multiplicator(const CcsMatrix* _transposed_A, const CcsMatrix* _B,
-        std::vector<double>* _value, std::vector<int>* _row,
-        std::vector<int>* _resColIndex) : transposed_A(*_transposed_A), B(*_B),
-        value(_value), row(_row), resColIndex(_resColIndex) {}
-    void operator()(const tbb::blocked_range<int>& r) const {
-        int colNZ = 0, first_col = B.N;
-        double value_tmp;
-        int begin = r.begin(), end = r.end();
-
-        for (int j = begin; j < end; j++) {
-            if (j < first_col) first_col = j;
-
-            colNZ = 0;
-            for (int i = 0; i < transposed_A.N; i++) {
-                value_tmp = scalarMultiplication(&transposed_A, &B, i, j);
-                if (value_tmp != 0) {
-                    value[j].push_back(value_tmp);
-                    row[j].push_back(i);
-                    colNZ++;
-                }
-            }
-            (*resColIndex)[j] = colNZ;
+          }
+          if (tmp > eps || tmp < -eps) {
+            tmp_values[i].push_back(tmp);
+            tmp_rows[i].push_back(j);
+            tmp_col_indexes[i]++;
+          }
         }
-    }
-};
+      }
+    });
+  init.terminate();
 
-CcsMatrix matrixMultiplicate(const CcsMatrix* m1, const CcsMatrix* m2) {
-    if (m1->N != m2->M) throw "m1 and m2 are incompatible";
+  for (int j = 0; j < size; j++) {
+    res_values.insert(res_values.end(), tmp_values[j].begin(),
+      tmp_values[j].end());
+    res_rows.insert(res_rows.end(), tmp_rows[j].begin(), tmp_rows[j].end());
+    res_col_indexes.insert(res_col_indexes.end(), tmp_col_indexes[j]);
+  }
 
-    CcsMatrix res(m1->M, m2->N, 0);
-    CcsMatrix transposed_m1(transposeMatrix(m1));
-    int N = res.N;
-    std::vector<double>* value = new std::vector<double>[N];
-    std::vector<int>* row = new std::vector<int>[N];
-
-    int grainsize = 10;
-    tbb::parallel_for(tbb::blocked_range<int>(0, m2->N, grainsize),
-    Multiplicator(&transposed_m1, m2, value, row, &res.colIndex));
-
-    int nz = 0;
-    for (int j = 0; j < N; j++) {
-        int tmp = res.colIndex[j];
-        res.colIndex[j] = nz;
-        nz += tmp;
-    }
-    res.colIndex[N] = nz;
-
-    res.value.resize(res.colIndex.back());
-    res.row.resize(res.colIndex.back());
-
-    int count = 0;
-    double tmp;
-    for (int i = 0; i < N; i++) {
-        int size = value[i].size();
-        if (size > 0) {
-            memcpy(&res.value[count], &value[i][0],
-                size * sizeof(tmp));
-            memcpy(&res.row[count], &row[i][0],
-                size * sizeof(count));
-            count += size;
-        }
-    }
-
-    delete[] value;
-    delete[] row;
-
-    return res;
+  return SparseMatrix(res_values, res_col_indexes, res_rows,
+    static_cast<int>(res_rows.size()), size);
 }

@@ -1,26 +1,25 @@
 // Copyright 2021 Kuznetsov Nikita
 #ifndef MODULES_TASK_3_KUZNETSOV_N_MULT_SPARSE_MAT_TBB_SPARSE_MATRIX_H_
 #define MODULES_TASK_3_KUZNETSOV_N_MULT_SPARSE_MAT_TBB_SPARSE_MATRIX_H_
+
 #include <vector>
 
-struct CcsMatrix {
-    int M, N;
-    int not_zero_number;
+class SparseMatrix {
+public:
+  std::vector<double> values;
+  std::vector<int> col_indexes, rows;
+  int num_nzero, size;
 
-    std::vector<double> value;
-    std::vector<int> row;
-    std::vector<int> colIndex;
+  SparseMatrix(const std::vector<double>& _values,
+    const std::vector<int>& _col_indexes,
+    const std::vector<int>& _rows, int _num_nzero, int _size);
 
-    CcsMatrix(int _M, int _N, int nz);
-    CcsMatrix() = default;
+  SparseMatrix(int _size, int _num_nzero, unsigned int seed = 475);  // Random
+  bool operator==(const SparseMatrix& SM);
+
+  SparseMatrix transpose();
+  SparseMatrix ParallelMult(const SparseMatrix& SM, int th);
+  SparseMatrix operator*(const SparseMatrix& SM);
 };
-
-double measurementOfTime(int M1, int N1, int N2, int num_threads);
-bool operator==(const CcsMatrix& m1, const CcsMatrix& m2);
-CcsMatrix generateMatrix(int M, int N);
-CcsMatrix transposeMatrix(const CcsMatrix* m);
-double scalarMultiplication(const CcsMatrix* transposed_m, const CcsMatrix* m,
-    int i, int j);
-CcsMatrix matrixMultiplicate(const CcsMatrix* m1, const CcsMatrix* m2);
 
 #endif  // MODULES_TASK_3_KUZNETSOV_N_MULT_SPARSE_MAT_TBB_SPARSE_MATRIX_H_

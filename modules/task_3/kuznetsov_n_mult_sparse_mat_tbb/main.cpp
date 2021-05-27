@@ -6,96 +6,140 @@
 #include <cmath>
 #include "../../modules/task_3/kuznetsov_n_mult_sparse_mat_tbb/sparse_matrix.h"
 
-TEST(SPARSE_MATRIX, can_create_matrix) {
-    ASSERT_NO_THROW(CcsMatrix m(1, 1, 1));
+TEST(SPARSE_MATRIX, MAT_EQUAL_ITSELF_1) {
+  std::vector<double> arg1 = { 1, 1, 1 };
+  std::vector<int> arg2 = { 0, 1, 2, 3 };
+  std::vector<int> arg3 = { 0, 1, 2 };
+  SparseMatrix A(arg1, arg2, arg3, 3, 3);
+  ASSERT_TRUE(A == A);
 }
 
-TEST(SPARSE_MATRIX, throw_when_number_of_rows_are_not_positive) {
-    ASSERT_ANY_THROW(CcsMatrix m(-3, 1, 1));
+TEST(SPARSE_MATRIX, MAT_EQUAL_ITSELF_2) {
+  std::vector<double> arg1 = { 5, 8, 1, 2, 6 };
+  std::vector<int> arg2 = { 0, 2, 3, 5, 5 };
+  std::vector<int> arg3 = { 0, 3, 2, 1, 3 };
+  SparseMatrix A(arg1, arg2, arg3, 5, 4);
+  ASSERT_TRUE(A == A);
 }
 
-TEST(SPARSE_MATRIX, throw_when_number_of_columns_are_not_positive) {
-    ASSERT_ANY_THROW(CcsMatrix m(1, 0, 1));
+TEST(SPARSE_MATRIX, NO_THROW_WHEN_TRANSPOSE) {
+  std::vector<double> arg1 = { 1, 7, 1, 2, 6 };
+  std::vector<int> arg2 = { 0, 2, 3, 5, 5 };
+  std::vector<int> arg3 = { 0, 3, 2, 1, 3 };
+  SparseMatrix A = SparseMatrix(arg1, arg2, arg3, 5, 4);
+  ASSERT_NO_THROW(A.transpose());
 }
 
-TEST(SPARSE_MATRIX, throw_when_number_of_elements_are_not_positive) {
-    ASSERT_ANY_THROW(CcsMatrix m(1, 0, -3));
+TEST(SPARSE_MATRIX, NO_THROW_WHEN_CREATE_RANDOM_MAT) {
+  ASSERT_NO_THROW(SparseMatrix(1, 1, 475));
 }
 
-TEST(SPARSE_MATRIX, multiply_vector_by_vector) {
-    CcsMatrix m1(5, 1, 2);
-    m1.value = { 2, 1 };
-    m1.row = { 1, 2 };
-    m1.colIndex = { 0, 2 };
-
-    CcsMatrix m2(1, 4, 1);
-    m2.value = { 3 };
-    m2.row = { 0 };
-    m2.colIndex = { 0, 0, 0, 1, 1 };
-
-    CcsMatrix m3(5, 4, 2);
-    m3.value = { 6, 3 };
-    m3.row = { 1, 2 };
-    m3.colIndex = { 0, 0, 0, 2, 2 };
-
-    EXPECT_EQ(m3, matrixMultiplicate(&m1, &m2));
+TEST(SPARSE_MATRIX, THROW_WHEN_SIZE_IS_NEGATIVE) {
+  ASSERT_ANY_THROW(SparseMatrix(-1, 1, 475));
 }
 
-TEST(SPARSE_MATRIX, multiply_matrix_by_vector) {
-    CcsMatrix m1(4, 5, 6);
-    m1.value = { 1, 3, 2, 5, 4, 8 };
-    m1.row = { 0, 3, 1, 2, 3, 0 };
-    m1.colIndex = { 0, 1, 2, 3, 5, 6 };
-
-    CcsMatrix m2(5, 1, 2);
-    m2.value = { 2, 1 };
-    m2.row = { 1, 2 };
-    m2.colIndex = { 0, 2 };
-
-    CcsMatrix m3(4, 1, 2);
-    m3.value = { 2, 6 };
-    m3.row = { 1, 3 };
-    m3.colIndex = { 0, 2 };
-
-    EXPECT_EQ(m3, matrixMultiplicate(&m1, &m2));
+TEST(SPARSE_MATRIX, CORRECT_MULT_IDENTITY_MATRIX) {
+  SparseMatrix A({ 1, 1, 1 }, { 0, 1, 2, 3 }, { 0, 1, 2 }, 3, 3);
+  SparseMatrix B({ 3, 5, 1 }, { 0, 1, 2, 3 }, { 0, 1, 2 }, 3, 3);
+  ASSERT_TRUE(B == A * B);
 }
 
-TEST(SPARSE_MATRIX, multiply_vector_by_matrix) {
-    CcsMatrix m1(1, 4, 2);
-    m1.value = { 2, 1 };
-    m1.row = { 0, 0 };
-    m1.colIndex = { 0, 0, 1, 2, 2 };
-
-    CcsMatrix m2(4, 5, 6);
-    m2.value = { 1, 3, 2, 5, 4, 8 };
-    m2.row = { 0, 3, 1, 2, 3, 0 };
-    m2.colIndex = { 0, 1, 2, 3, 5, 6 };
-
-    CcsMatrix m3(1, 5, 2);
-    m3.value = { 4, 5 };
-    m3.row = { 0 , 0 };
-    m3.colIndex = { 0, 0, 0, 1, 2, 2 };
-
-    EXPECT_EQ(m3, matrixMultiplicate(&m1, &m2));
+TEST(SPARSE_MATRIX, CORRECT_MULT) {
+  SparseMatrix A({ 1, 1 }, { 0, 1, 1, 2 }, { 0, 2 }, 2, 3);
+  SparseMatrix B({ 7, 8, 9 }, { 0, 1, 2, 3 }, { 0, 1, 2 }, 3, 3);
+  SparseMatrix exp_result({ 7, 9 }, { 0, 1, 1, 2 }, { 0, 2 }, 2, 3);
+  SparseMatrix result = A * B;
+  ASSERT_TRUE(exp_result == result);
 }
 
-TEST(SPARSE_MATRIX, multiply_matrix_by_matrix) {
-    CcsMatrix m1(4, 5, 6);
-    m1.value = { 1, 3, 2, 5, 4, 8 };
-    m1.row = { 0, 3, 1, 2, 3, 0 };
-    m1.colIndex = { 0, 1, 2, 3, 5, 6 };
+TEST(SPARSE_MATRIX, MAT_EQUAL_WITH_SAME_SEED) {
+  SparseMatrix A(17, 8, 35);
+  SparseMatrix B(17, 8, 35);
+  ASSERT_TRUE(A == B);
+}
 
-    CcsMatrix m2(5, 3, 5);
-    m2.value = { 1, 6, 3, 7, 2 };
-    m2.row = { 0, 4, 3, 1, 4 };
-    m2.colIndex = { 0, 2, 3, 5 };
+TEST(SPARSE_MATRIX, NO_THROW_WHEN_MULTIPLY) {
+  SparseMatrix A(1000, 50, 10);
+  SparseMatrix B(1000, 50, 10);
+  ASSERT_NO_THROW(A * B);
+}
 
-    CcsMatrix m3(4, 3, 5);
-    m3.value = { 49, 15, 12, 16, 21 };
-    m3.row = { 0, 2, 3, 0, 3 };
-    m3.colIndex = { 0, 1, 3, 5 };
+TEST(SPARSE_MATRIX, NO_THROW_WHEN_MULTIPLY_2) {
+  SparseMatrix A = SparseMatrix(2000, 500, 475);
+  SparseMatrix B = SparseMatrix(2000, 500, 475);
+  ASSERT_NO_THROW(A * B);
+}
 
-    EXPECT_EQ(m3, matrixMultiplicate(&m1, &m2));
+TEST(SPARSE_MATRIX, PARALLEL_MULT_MATRIX_COMPARE_SEQ_1000_ELEM) {
+  SparseMatrix A(1000, 100, 10);
+  SparseMatrix B(1000, 100, 10);
+
+  auto time1 = tbb::tick_count::now();
+  SparseMatrix result = A * B;
+  std::cout << "SEQ TIME: " << (tbb::tick_count::now() - time1).seconds() << std::endl;
+
+  time1 = tbb::tick_count::now();
+  SparseMatrix par_result = A.ParallelMult(B, 4);
+  std::cout << "PAR TIME: " << (tbb::tick_count::now() - time1).seconds() << std::endl;
+
+  bool f = true;
+  for (size_t i = 0; i < result.values.size(); i++) {
+    if (fabs(result.values[i] - par_result.values[i]) >=
+      std::numeric_limits<double>::epsilon()) {
+      f = false;
+      break;
+    }
+  }
+
+  ASSERT_TRUE(f);
+}
+
+TEST(SPARSE_MATRIX, PARALLEL_MULT_MATRIX_COMPARE_SEQ_2000_ELEM) {
+  SparseMatrix A(2000, 200, 10);
+  SparseMatrix B(2000, 200, 10);
+
+  auto time1 = tbb::tick_count::now();
+  SparseMatrix result = A * B;
+  std::cout << "SEQ TIME: " << (tbb::tick_count::now() - time1).seconds() << std::endl;
+
+  time1 = tbb::tick_count::now();
+  SparseMatrix par_result = A.ParallelMult(B, 4);
+  std::cout << "PAR TIME: " << (tbb::tick_count::now() - time1).seconds() << std::endl;
+
+  bool f = true;
+  for (size_t i = 0; i < result.values.size(); i++) {
+    if (fabs(result.values[i] - par_result.values[i]) >=
+      std::numeric_limits<double>::epsilon()) {
+      f = false;
+      break;
+    }
+  }
+
+  ASSERT_TRUE(f);
+}
+
+TEST(SPARSE_MATRIX, PARALLEL_MULT_MATRIX_COMPARE_SEQ_4000_ELEM) {
+  SparseMatrix A(4000, 300, 10);
+  SparseMatrix B(4000, 300, 10);
+
+  auto time1 = tbb::tick_count::now();
+  SparseMatrix result = A * B;
+  std::cout << "SEQ TIME: " << (tbb::tick_count::now() - time1).seconds() << std::endl;
+
+  time1 = tbb::tick_count::now();
+  SparseMatrix par_result = A.ParallelMult(B, 4);
+  std::cout << "PAR TIME: " << (tbb::tick_count::now() - time1).seconds() << std::endl;
+
+  bool f = true;
+  for (size_t i = 0; i < result.values.size(); i++) {
+    if (fabs(result.values[i] - par_result.values[i]) >=
+      std::numeric_limits<double>::epsilon()) {
+      f = false;
+      break;
+    }
+  }
+
+  ASSERT_TRUE(f);
 }
 
 int main(int argc, char** argv) {
