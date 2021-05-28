@@ -1,9 +1,9 @@
 // Copyright 2021 Panova Olga
+#include <omp.h>
+#include <stdio.h>
 #include <gtest/gtest.h>
 #include <vector>
 #include "./shell_b_sort.h"
-#include <omp.h>
-#include <stdio.h>
 #define TIME
 
 TEST(Odd_Even_Shell, Division_Is_Correct) {
