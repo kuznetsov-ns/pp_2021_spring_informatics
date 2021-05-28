@@ -229,12 +229,12 @@ TEST(Strassen_algorithm, TEST7) {
     std::vector<double>::iterator c_it = c_default.begin();
     matrMultiSEQ(a, b, c_it, rows_num);
 
-    auto t1 = tbb::tick_count::now();
+    // auto t1 = tbb::tick_count::now();
     c_strass = StrassenMultiOMP(a, b);
-    auto t2 = tbb::tick_count::now();
-    auto t1_t2_diff = (t2 - t1).seconds();
+    // auto t2 = tbb::tick_count::now();
+    // auto t1_t2_diff = (t2 - t1).seconds();
 
-    std::cout << t1_t2_diff << std::endl;
+    // std::cout << t1_t2_diff << std::endl;
 
     for (int i = 0; i < static_cast<int>(c_strass.size()); i++) {
         ASSERT_LT(abs(c_strass[i] - c_default[i]), EPS);
@@ -242,12 +242,12 @@ TEST(Strassen_algorithm, TEST7) {
 
     tbb::task_scheduler_init init(4);
 
-    t1 = tbb::tick_count::now();
+    // t1 = tbb::tick_count::now();
     c_strass = StrassenMultiTBB(a, b);
-    t2 = tbb::tick_count::now();
-    t1_t2_diff = (t2 - t1).seconds();
+    // t2 = tbb::tick_count::now();
+    // t1_t2_diff = (t2 - t1).seconds();
 
-    std::cout << t1_t2_diff << std::endl;
+    // std::cout << t1_t2_diff << std::endl;
 
     for (int i = 0; i < static_cast<int>(c_strass.size()); i++) {
         ASSERT_LT(abs(c_strass[i] - c_default[i]), EPS);
