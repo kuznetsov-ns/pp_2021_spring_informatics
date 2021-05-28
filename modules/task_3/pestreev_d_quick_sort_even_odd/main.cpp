@@ -86,8 +86,8 @@ TEST(pestreev_d_quick_sort_even_odd, Test_random_array_100_4) {
     ASSERT_EQ(1, CompareArrays(Array, Array_copy, size));
 }
 
-TEST(pestreev_d_quick_sort_even_odd, Test_sorted_vector4231211_2) {
-    int size = 4231211;
+TEST(pestreev_d_quick_sort_even_odd, Test_sorted_vector1211_2) {
+    int size = 1211;
     int* Array = getRandomArray(size);
     std::vector<int> vec;
     for (int i = 0; i < size; i++) {
@@ -102,8 +102,8 @@ TEST(pestreev_d_quick_sort_even_odd, Test_sorted_vector4231211_2) {
     ASSERT_EQ(vec, vec_s);
 }
 
-TEST(pestreev_d_quick_sort_even_odd, Test_inverted_sorted_vector4231211_2) {
-    int size = 4231211;
+TEST(pestreev_d_quick_sort_even_odd, Test_inverted_sorted_vector1211_2) {
+    int size = 1211;
     int* Array = getRandomArray(size);
     std::vector<int> vec;
     for (int i = 0; i < size; i++) {
@@ -124,27 +124,16 @@ TEST(pestreev_d_quick_sort_even_odd, Test_inverted_sorted_vector4231211_2) {
     ASSERT_EQ(vec, vec_s);
 }
 
-TEST(pestreev_d_quick_sort_even_odd, Test_on_35500000_tbbsort) {
-    int size = 35500000;
+TEST(pestreev_d_quick_sort_even_odd, Test_on_40000_tbbsort) {
+    int size = 40000;
     int* Array = getRandomArray(size);
     int* Array_copy = new int[size];
     for (int i = 0; i < size; i++) {
         Array_copy[i] = Array[i];
     }
 
-    tbb::tick_count b1 = tbb::tick_count::now();
     parallel_sorting_int(Array, size, 4);
-    tbb::tick_count e1 = tbb::tick_count::now();
-
-    double time1 = (e1 - b1).seconds();
-    std::cout << "parallelBatcher-> " << time1 << std::endl;
-
-    tbb::tick_count b2 = tbb::tick_count::now();
     qsort(Array_copy, 0, size - 1);
-    tbb::tick_count e2 = tbb::tick_count::now();
-
-    double time2 = (e2 - b2).seconds();
-    std::cout << "seqBatcher-> " << time2 << std::endl;
 
     ASSERT_EQ(1, CompareArrays(Array, Array_copy, size));
 }
