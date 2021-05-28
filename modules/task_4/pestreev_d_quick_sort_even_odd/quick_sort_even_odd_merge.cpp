@@ -259,7 +259,6 @@ std::vector<int> parallel_sorting(const std::vector<int>& vec,
     int comps_size = comps.size();
     std::vector<std::thread> threads(thread_size);
     int nloop = thread_size;
-
     for (int t = 0; t < thread_size; t++) {
         int begin_i = t * nloop / thread_size;
         int end_i = 0;

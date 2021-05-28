@@ -44,8 +44,8 @@ TEST(Quick_Sort_Operations, Test_random_vector_1_4) {
     ASSERT_EQ(vec_V, vec_stan);
 }
 
-TEST(Quick_Sort_Operations, Test_sorted_vector4231211_2) {
-    std::vector<int> vec = getRandomVector(4231211);
+TEST(Quick_Sort_Operations, Test_sorted_vector100_2) {
+    std::vector<int> vec = getRandomVector(100);
     std::sort(vec.begin(), vec.end());
     std::vector<int> vec_V = parallel_sorting(vec, 2);
     std::vector<int> vec_stan = vec;
@@ -53,8 +53,8 @@ TEST(Quick_Sort_Operations, Test_sorted_vector4231211_2) {
     ASSERT_EQ(vec_V, vec_stan);
 }
 
-TEST(Quick_Sort_Operations, Test_inverted_sorted_vector4231211_2) {
-    std::vector<int> vec = getRandomVector(4231211);
+TEST(Quick_Sort_Operations, Test_inverted_sorted_vector100_2) {
+    std::vector<int> vec = getRandomVector(100);
     std::sort(vec.begin(), vec.end(), [](int a, int b){
         return a > b;
     });
@@ -64,16 +64,16 @@ TEST(Quick_Sort_Operations, Test_inverted_sorted_vector4231211_2) {
     ASSERT_EQ(vec_V, vec_stan);
 }
 
-TEST(Quick_Sort_Operations, Test_random_vector_1285231_2) {
-    std::vector<int> vec = getRandomVector(1285231);
+TEST(Quick_Sort_Operations, Test_random_vector_1283_2) {
+    std::vector<int> vec = getRandomVector(1283);
     std::vector<int> vec_V = parallel_sorting(vec, 2);
     std::vector<int> vec_stan = vec;
     std::sort(vec_stan.begin(), vec_stan.end());
     ASSERT_EQ(vec_V, vec_stan);
 }
 
-TEST(Quick_Sort_Operations, Test_random_vector_22852314_4) {
-    std::vector<int> vec = getRandomVector(22852314);
+TEST(Quick_Sort_Operations, Test_random_vector_40000_4) {
+    std::vector<int> vec = getRandomVector(40000);
     std::vector<int> vec_V = parallel_sorting(vec, 4);
     std::vector<int> vec_stan = vec;
     std::sort(vec_stan.begin(), vec_stan.end());
