@@ -295,6 +295,7 @@ std::vector<int> parallel_sorting(const std::vector<int>& vec,
     std::vector<int> res;
     int size = thread_size;
     int size_m_s = vecsizeG / thread_size;
+
     for (int i = 0; i < size; i++)
         for (int j = 0; j < size_m_s; j++) {
             res.push_back(loc[i][j]);
